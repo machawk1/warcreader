@@ -8,7 +8,7 @@ to work with warc files.
 
 ## Authors
 
-Milos Svana <milos.svana(at)gmail.com>
+Milos Svana (milos.svana(at)gmail.com)
 
 This library was created as a part of my Bachelor's thesis at the
 [Knowledge Technology Research Group](http://knot.fit.vutbr.cz/), 
