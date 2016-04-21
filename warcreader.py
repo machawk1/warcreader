@@ -40,7 +40,7 @@ class Webpage(object):
 		Extracts webpage title from html <title /> element in the payload using
 		a regular expression. Returns None if no title is found.
 		'''
-		matches = self.title_re.search(self.payload)
+		matches = self.title_re.search(self.payload[:20000])
 		if matches:
 			return matches.group(1)
 		else:
