@@ -3,8 +3,8 @@
 WarcReader is as Python library for reading HTTP responses from [Web ARChive 
 (WARC) files](https://en.wikipedia.org/wiki/Web_ARChive).
 
-It's main goal is to be as fast as possible, not to provide advanced functions
-to work with warc files.
+Its main goal is to be as fast as possible, not to provide advanced functions
+to work with WARC files.
 
 ## Authors
 
@@ -17,17 +17,17 @@ Faculty of Information technology, Brno University of Technology.
 ### Example
 
 ```python
-from warcreader import WarcReader
+from warcreader import WarcFile
+from gzip import GzipFile
 
-warc_reader = WarcReader("/path/to/warc/file")
-for webpage in warc_reader.iterate():
-	print(webpage.title)
+warc_gzip = GzipFile('/path/to/warc/file')
+warc_file = WarcFile(warc_gzip)
+for webpage in warc_file:
+	print(webpage.uri)
 ```
 
 ## TODO
 
-- make title extraction optional
-- add requirements
 - add more detailed documentation to this README
 - add comparison to other solutions to this README
 - publish on pip

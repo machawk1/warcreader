@@ -12,41 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from gzip import GzipFile
 import re
 
 class Webpage(object):
 	'''
 	Represents one webpage (or HTTP response) from WARC file. You can access:
-	- webpage payload
-	- uri 
-	- title if present
-	- is_html - a boolean which tells if the payload is a HTML webpage
+	- payload: HTML source code of the page for example
+	- uri: absolute URI
+	- content_type: value of HTTP header Content-Type field
 	'''
 
-	title_re = re.compile(
-		'<head>.*?<title>(.*?)</title>.*?</head>', 
-		re.IGNORECASE | re.DOTALL)
-
-	def __init__(self, uri, payload, is_html):
-		''' Called by WarcReader '''
+	def __init__(self, uri, payload, content_type):
+		''' Called by WarcFile '''
 		self.uri = uri
 		self.payload = payload
-		self.is_html = is_html
-		self.title = self.extract_title()
+		self.content_type = content_type
 
-	def extract_title(self):
-		'''
-		Extracts webpage title from html <title /> element in the payload using
-		a regular expression. Returns None if no title is found.
-		'''
-		matches = self.title_re.search(self.payload[:20000])
-		if matches:
-			return matches.group(1)
-		else:
-			return None
-
-class WarcReader(object):
+class WarcFile(object):
 	'''
 	Reads the web achive (WARC) files. 
 	Can iterate through HTTP responses inside using a simple state machine.
@@ -55,61 +37,51 @@ class WarcReader(object):
 	http_response_re = re.compile(b'^HTTP\/1\.[01] 200')
 	h_letter = b'H'
 
-	def __init__(self, filename):
+	def __init__(self, file_object):
 		'''
-		Opens the WARC file for reading and sets the initial state of the 
-		state machine. Supports raw or Gzip compressed (file must have '.gz'
-		extension) WARC files. 
-		'''
-		self.open(filename)
-		self.in_warc_response = False
-		self.in_http_response = False
-		self.in_payload = False
+		Accepts a file object or any other object which provides same interface,
+		for example an instance of gzip.GzipFile class. This object should 
+		contain the WARC archieve.
 
-	def iterate(self):
+		Sets the initial state of the state machine.
 		'''
-		Generator that provides HTTP responses from the WARC file as instances 
-		of Webpage class one at the time. Can be used in the for loop:
+		self.file_object = file_object
+		self.init_state()
 
-		warc_reader = new WarcReader("some-warc.gz")
-		for webpage in warc_reader.iterate():
-			print(webpage.title)
-		'''
-		payload = ''
-		is_html = False
-		for line in self.file_obj:
+	def __iter__(self):
+		''' Make object iterable. '''
+		return self
+
+	def next(self):
+		''' Returns next HTTP response from the WARC file. '''
+		content_type = uri = None
+		for line in self.file_object:
 			if not self.in_warc_response:
 				if line == b'WARC-Type: response\r\n':
 					self.in_warc_response = True
 				continue
 			if not self.in_http_response:
 				if line[:11] == b'WARC-Target':
-					target_uri = line[17:-2]
+					uri = line[17:-2]
 				elif line[0:1] == self.h_letter and self.http_response_re.match(line):
 					self.in_http_response = True
 				continue
 			if not self.in_payload:
-				if line[:23] == b'Content-Type: text/html':
-					is_html = True
+				if line[:13] == b'Content-Type:':
+					content_type = line[14:-2]
 				elif line == b'\r\n':
+					payload = ''
 					self.in_payload = True
 				continue
 			if line == b'WARC/1.0\r\n':
-				yield Webpage(target_uri, payload, is_html)
-				self.in_payload = self.in_http_response = self.in_warc_response = is_html = False
-				payload = ''
-				continue
+				payload = payload[:-4]
+				self.init_state()
+				return Webpage(uri, payload, content_type)
 			payload += str(line)
+		raise StopIteration()
 
-	def open(self, filename):
-		'''
-		Opens the WARC file in standard Python way or as a GzipFile if the
-		filename ends with .gz. Both object provide same interface for reading
-		so it's not required to differentiate between them anywhere else
-		'''
-		file_handle = open(filename, 'rb')
-		if filename[-3:] =='.gz':
-			self.file_obj = GzipFile(mode='r', fileobj=file_handle)
-		else:
-			self.file_obj = file_handle
-		return self.file_obj
+	def init_state(self):
+		''' Sets the initial state of the state machine. '''
+		self.in_warc_response = False
+		self.in_http_response = False
+		self.in_payload = False
