@@ -14,13 +14,41 @@ This library was created as a part of my Bachelor's thesis at the
 [Knowledge Technology Research Group](http://knot.fit.vutbr.cz/), 
 Faculty of Information technology, Brno University of Technology.
 
+This library is released under Apache 2.0 licence
+
+## Documentation
+
+### WarcFile
+
+`WarcFile` class represents a WARC archieve to be read.
+
+Accepts one parameter on initialization. Its value should be an opened file
+containing the WARC archieve. It can be an instance of `file` type created by 
+`open()` function or any other file-like object like `gzip.GzipFile` or 
+`lzma.LZMAFile` instance.
+
+**The file has to be opened in binary mode** 
+(letter 'b' has to be added to the `mode` parameter string)
+
+`WarcFile` instances are iterable. They return next HTTP response as `Webpage` 
+instance on each iteration. 
+
+### Webpage
+
+`Webpage` class represents one HTTP respone from WARC archieve. Does not
+provide any methods, only the following attributes:
+
+- `uri` - absolute URI of the HTTP response
+- `content_type` - value of `Content-Type` field of HTTP header. `None` if this field is not found
+- `payload` - contents of the HTTP response like HTML source core of the the web page
+
 ### Example
 
 ```python
 from warcreader import WarcFile
 from gzip import GzipFile
 
-warc_gzip = GzipFile('/path/to/warc/file')
+warc_gzip = GzipFile('/path/to/warc/file', 'rb')
 warc_file = WarcFile(warc_gzip)
 for webpage in warc_file:
 	print(webpage.uri)
@@ -28,6 +56,5 @@ for webpage in warc_file:
 
 ## TODO
 
-- add more detailed documentation to this README
 - add comparison to other solutions to this README
-- publish on pip
+- publish on pypi

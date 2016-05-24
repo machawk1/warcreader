@@ -41,7 +41,7 @@ class WarcFile(object):
 		'''
 		Accepts a file object or any other object which provides same interface,
 		for example an instance of gzip.GzipFile class. This object should 
-		contain the WARC archieve.
+		contain the WARC archieve. The file must be opened in binary mode.
 
 		Sets the initial state of the state machine.
 		'''
