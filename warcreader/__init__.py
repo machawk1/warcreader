@@ -12,27 +12,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-'''
-Simple test script which prints all HTTP responses' URLs and their total
-count from a warc file whose path is passed as command line argument.
-
-Does not support gzipped files.
-'''
-
-from warcreader import WarcFile
-from sys import argv
-from io import open
-
-def main():
-	filename = argv[1]
-	with open(filename, 'rb') as raw_warc_file:
-		warc_file = WarcFile(raw_warc_file)
-		count = 0
-		for webpage in warc_file:
-			count += 1
-			print(webpage.uri)
-		print('Total count of HTTP responses: %d' % count)
-
-if __name__ == '__main__':
-	main()
-
+from .warcreader import WarcFile
+from .warcreader import Webpage

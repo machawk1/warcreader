@@ -53,6 +53,9 @@ class WarcFile(object):
 		return self
 
 	def next(self):
+		return self.__next__()
+
+	def __next__(self):
 		''' Returns next HTTP response from the WARC file. '''
 		content_type = uri = None
 		for line in self.file_object:
@@ -70,14 +73,14 @@ class WarcFile(object):
 				if line[:13] == b'Content-Type:':
 					content_type = line[14:-2]
 				elif line == b'\r\n':
-					payload = ''
+					payload = b''
 					self.in_payload = True
 				continue
 			if line == b'WARC/1.0\r\n':
 				payload = payload[:-4]
 				self.init_state()
 				return Webpage(uri, payload, content_type)
-			payload += str(line)
+			payload = payload.join([line])
 		raise StopIteration()
 
 	def init_state(self):
