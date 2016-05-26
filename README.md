@@ -18,6 +18,17 @@ This library is released under Apache 2.0 licence
 
 ## Documentation
 
+### Installation
+
+You can use `pip` or `pip3` utility to install the library:
+
+```
+pip install warcreader
+```
+
+or you can just download the repository contents and copy the `warcreader` directory
+to your project
+
 ### WarcFile
 
 `WarcFile` class represents a WARC archieve to be read.
@@ -56,5 +67,5 @@ for webpage in warc_file:
 
 ## TODO
 
-- add comparison to other solutions to this README
-- publish on pypi
+- make benchmarks
+- test on other WARC file sources, not only CommonCrawl
