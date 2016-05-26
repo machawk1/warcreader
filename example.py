@@ -30,7 +30,7 @@ def main():
 		count = 0
 		for webpage in warc_file:
 			count += 1
-			print(webpage.uri)
+			print(webpage.payload)
 		print('Total count of HTTP responses: %d' % count)
 
 if __name__ == '__main__':

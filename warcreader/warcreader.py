@@ -80,7 +80,7 @@ class WarcFile(object):
 				payload = payload[:-4]
 				self.init_state()
 				return Webpage(uri, payload, content_type)
-			payload = payload.join([line])
+			payload = b''.join([payload, line])
 		raise StopIteration()
 
 	def init_state(self):
