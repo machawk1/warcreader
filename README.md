@@ -65,7 +65,33 @@ for webpage in warc_file:
 	print(webpage.uri)
 ```
 
+## Benchmarks
+
+### Test script 
+
+```python
+from warcreader import WarcFile
+from gzip import GzipFile
+from sys import argv
+
+if __name__ == '__main__':
+    with GzipFile(argv[1], mode='rb') as gzip_file:
+        warc_file = WarcFile(gzip_file)
+        for webpage in warc_file:
+            print(webpage.uri)
+```
+
+### Commoncrawl (CC-2015-48)
+
+| File name                                     | File size    | Time Python 2.7  | Time Python 3 |
+|-----------------------------------------------|--------------|------------------|---------------|
+| 1448398444047.40_20151124205404-00010-warc.gz | 861MB        | 2m2.715s         | 3m43.404s     |
+| 1448398444047.40_20151124205404-00021-warc.gz | 873MB        | 2m8.732s         | 3m59.925s     |
+| 1448398444047.40_20151124205404-00032-warc.gz | 880MB        | 2m7.905s         | 4m26.469s     | 
+| 1448398444047.40_20151124205404-00043-warc.gz | 880MB        | 2m3.966s         | 3m50.878s     |
+| 1448398444047.40_20151124205404-00054-warc.gz | 870MB        | 2m13.064s        | 4m10.171s     |
+
+
 ## TODO
 
-- make benchmarks
-- test on other WARC file sources, not only CommonCrawl
+- Benchmarks on Clueweb repository
