@@ -67,6 +67,10 @@ for webpage in warc_file:
 
 ## Benchmarks
 
+### Testing setup
+
+Tested on Intel(R) Xeon(R) CPU E5-2630 0 @ 2.30GHz only using one core. Data were are stored on a disk array containing 12 4TB hard drives in RAID 6 and SSD cache. 
+
 ### Test script 
 
 ```python
@@ -92,6 +96,12 @@ if __name__ == '__main__':
 | 1448398444047.40_20151124205404-00054-warc.gz | 870MB        | 2m13.064s        | 4m10.171s     |
 
 
-## TODO
+### Clueweb9
 
-- Benchmarks on Clueweb repository
+| File name                                     | File size    | Time Python 2.7  | Time Python 3 |
+|-----------------------------------------------|--------------|------------------|---------------|
+| cw_en0035_27.warc.gz                          | 161MB        | 0m37.090s        | 0m43.223s     |
+| cw_en0035_32.warc.gz                          | 151MB        | 0m27.869s        | 0m31.620s     |
+| cw_en0035_37.warc.gz                          | 153MB        | 0m30.470s        | 0m33.357s     | 
+| cw_en0035_42.warc.gz                          | 155MB        | 0m32.795s        | 0m35.594s     |
+| cw_en0035_47.warc.gz                          | 138MB        | 0m29.109s        | 0m32.739s     |
