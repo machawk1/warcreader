@@ -35,7 +35,9 @@ class WarcFile(object):
 	'''
 
 	http_response_re = re.compile(b'^HTTP\/1\.[01] 200')
+	warc_header_re = re.compile(b'^WARC\/[0-9\.]+(\r)?\n$')
 	h_letter = b'H'
+	w_letter = b'W'
 
 	def __init__(self, file_object):
 		'''
@@ -60,12 +62,13 @@ class WarcFile(object):
 		content_type = uri = None
 		for line in self.file_object:
 			if not self.in_warc_response:
-				if line == b'WARC-Type: response\r\n':
+				if line[:19] == b'WARC-Type: response':
 					self.in_warc_response = True
 				continue
 			if not self.in_http_response:
 				if line[:11] == b'WARC-Target':
-					uri = line[17:-2]
+					uri_end = -2 if line[-2] == '\r' else -1
+					uri = line[17:uri_end]
 				elif line[0:1] == self.h_letter and self.http_response_re.match(line):
 					self.in_http_response = True
 				continue
@@ -76,7 +79,7 @@ class WarcFile(object):
 					payload_lines = []
 					self.in_payload = True
 				continue
-			if line == b'WARC/1.0\r\n':
+			if line[0:1] == self.w_letter and self.warc_header_re.match(line):
 				payload = b''.join(payload_lines[:-2])
 				self.init_state()
 				return Webpage(uri, payload, content_type)
