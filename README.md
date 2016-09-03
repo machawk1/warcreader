@@ -52,6 +52,7 @@ provide any methods, only the following attributes:
 - `uri` - absolute URI of the HTTP response
 - `content_type` - value of `Content-Type` field of HTTP header. `None` if this field is not found
 - `payload` - contents of the HTTP response like HTML source core of the the web page
+- `warc_record` - raw warc record as read from the archieve
 
 ### Example
 

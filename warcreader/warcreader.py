@@ -22,11 +22,12 @@ class Webpage(object):
 	- content_type: value of HTTP header Content-Type field
 	'''
 
-	def __init__(self, uri, payload, content_type):
+	def __init__(self, warc_record, uri, payload, content_type):
 		''' Called by WarcFile '''
 		self.uri = uri
 		self.payload = payload
 		self.content_type = content_type
+		self.warc_record = warc_record
 
 class WarcFile(object):
 	'''
@@ -63,8 +64,11 @@ class WarcFile(object):
 		for line in self.file_object:
 			if not self.in_warc_response:
 				if line[:19] == b'WARC-Type: response':
+					warc_record_lines = [self.prev_line, line]
 					self.in_warc_response = True
+				self.prev_line = line
 				continue
+			warc_record_lines.append(line)
 			if not self.in_http_response:
 				if line[:11] == b'WARC-Target':
 					uri_end = -2 if line[-2] == '\r' else -1
@@ -81,8 +85,10 @@ class WarcFile(object):
 				continue
 			if line[0:1] == self.w_letter and self.warc_header_re.match(line):
 				payload = b''.join(payload_lines[:-2])
+				warc_record = b''.join(warc_record_lines[:-2])
+				self.prev_line = line
 				self.init_state()
-				return Webpage(uri, payload, content_type)
+				return Webpage(warc_record, uri, payload, content_type)
 			payload_lines.append(line)
 		raise StopIteration()
 
