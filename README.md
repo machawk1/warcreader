@@ -41,12 +41,21 @@ containing the WARC archieve. It can be an instance of `file` type created by
 **The file has to be opened in binary mode** 
 (letter 'b' has to be added to the `mode` parameter string)
 
+#### Iteration trough WARC records
+
 `WarcFile` instances are iterable. They return next HTTP response as `Webpage` 
-instance on each iteration. 
+instance on each iteration.
+
+#### get_warcinfo()
+
+This function returns the `warcinfo` record as a single string (bytes string in Python 3)
+inclucing WARC headers. Returns `None` if this type of record is not found. Only
+searches for the `warcinfo` record in the beginning of the file. If other type of record 
+is found, the search is stopped.
 
 ### Webpage
 
-`Webpage` class represents one HTTP respone from WARC archieve. Does not
+`Webpage` class represents one HTTP response from WARC archieve. Does not
 provide any methods, only the following attributes:
 
 - `uri` - absolute URI of the HTTP response

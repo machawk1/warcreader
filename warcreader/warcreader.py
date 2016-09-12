@@ -34,7 +34,6 @@ class WarcFile(object):
 	Reads the web achive (WARC) files. 
 	Can iterate through HTTP responses inside using a simple state machine.
 	'''
-
 	http_response_re = re.compile(b'^HTTP\/1\.[01] 200')
 	warc_header_re = re.compile(b'^WARC\/[0-9\.]+(\r)?\n$')
 	h_letter = b'H'
@@ -60,6 +59,7 @@ class WarcFile(object):
 
 	def __next__(self):
 		''' Returns next HTTP response from the WARC file. '''
+		self.get_warcinfo()
 		content_type = uri = None
 		for line in self.file_object:
 			if not self.in_warc_response:
@@ -92,8 +92,38 @@ class WarcFile(object):
 			payload_lines.append(line)
 		raise StopIteration()
 
+	def get_warcinfo(self):
+		''' 
+		Returns WARCINFO record from the archieve as a single string including
+		WARC header. Expects the record to be in the beginning of the archieve,
+		otherwise it will be not found.
+		'''
+		if self.searched_for_warcinfo:
+			return self.warcinfo
+		prev_line = None
+		in_warcinfo_record = False
+		self.searched_for_warcinfo = True
+		for line in self.file_object:
+			if not in_warcinfo_record:
+				if line[:11] == b'WARC-Type: ':
+					if line[:19] == b'WARC-Type: warcinfo':
+						in_warcinfo_record = True
+						warcinfo_lines = [prev_line, line]
+					else:
+						self.warcinfo = None
+						break
+			else:
+				if line[0:1] == self.w_letter and self.warc_header_re.match(line):
+					self.warcinfo = b''.join(warcinfo_lines)
+					break
+				warcinfo_lines.append(line)
+			prev_line = line
+		self.file_object.seek(0)
+		return self.warcinfo
+
 	def init_state(self):
 		''' Sets the initial state of the state machine. '''
 		self.in_warc_response = False
 		self.in_http_response = False
 		self.in_payload = False
+		self.searched_for_warcinfo = False
