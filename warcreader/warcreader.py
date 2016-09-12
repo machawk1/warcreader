@@ -104,9 +104,7 @@ class WarcFile(object):
 			return self.warcinfo
 		prev_line = None
 		in_warcinfo_record = False
-		print(self.searched_for_warcinfo)
 		self.searched_for_warcinfo = True
-		print self.searched_for_warcinfo
 		for line in self.file_object:
 			if not in_warcinfo_record:
 				if line[:11] == b'WARC-Type: ':
