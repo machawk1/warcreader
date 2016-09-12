@@ -48,6 +48,7 @@ class WarcFile(object):
 		Sets the initial state of the state machine.
 		'''
 		self.file_object = file_object
+		self.searched_for_warcinfo = False
 		self.init_state()
 
 	def __iter__(self):
@@ -59,7 +60,8 @@ class WarcFile(object):
 
 	def __next__(self):
 		''' Returns next HTTP response from the WARC file. '''
-		self.get_warcinfo()
+		if not self.searched_for_warcinfo:
+			self.get_warcinfo()
 		content_type = uri = None
 		for line in self.file_object:
 			if not self.in_warc_response:
@@ -102,7 +104,9 @@ class WarcFile(object):
 			return self.warcinfo
 		prev_line = None
 		in_warcinfo_record = False
+		print(self.searched_for_warcinfo)
 		self.searched_for_warcinfo = True
+		print self.searched_for_warcinfo
 		for line in self.file_object:
 			if not in_warcinfo_record:
 				if line[:11] == b'WARC-Type: ':
@@ -126,4 +130,3 @@ class WarcFile(object):
 		self.in_warc_response = False
 		self.in_http_response = False
 		self.in_payload = False
-		self.searched_for_warcinfo = False
