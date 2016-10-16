@@ -63,6 +63,8 @@ class WarcFile(object):
 		if not self.searched_for_warcinfo:
 			self.get_warcinfo()
 		content_type = uri = None
+		page_loaded = False
+		last_record = True
 		for line in self.file_object:
 			if not self.in_warc_response:
 				if line[:19] == b'WARC-Type: response':
@@ -81,17 +83,23 @@ class WarcFile(object):
 			if not self.in_payload:
 				if line[:13] == b'Content-Type:':
 					content_type = line[14:-2]
-				elif line == b'\r\n':
+				elif line == b'\r\n' or line == '\n':
 					payload_lines = []
 					self.in_payload = True
 				continue
 			if line[0:1] == self.w_letter and self.warc_header_re.match(line):
-				payload = b''.join(payload_lines[:-2])
-				warc_record = b''.join(warc_record_lines[:-2])
-				self.prev_line = line
-				self.init_state()
-				return Webpage(warc_record, uri, payload, content_type)
+				last_record = False
+				break
 			payload_lines.append(line)
+			page_loaded = True
+		if page_loaded:
+			payload_lines = payload_lines[:-2] if not last_record else payload_lines
+			warc_lines = warc_record_lines[:-2] if not last_record else warc_record_lines
+			payload = b''.join(payload_lines)
+			warc_record = b''.join(warc_lines)
+			self.prev_line = line
+			self.init_state()
+			return Webpage(warc_record, uri, payload, content_type)
 		raise StopIteration()
 
 	def get_warcinfo(self):
