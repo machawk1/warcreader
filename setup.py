@@ -4,7 +4,7 @@ setup(
 	name='warcreader',
 	packages=['warcreader'],
 	version='0.4.3',
-	description='Library for reading HTTP responses from WARC (Web ARChieve) files',
+	description='Library for reading HTTP responses from WARC (Web ARChive) files',
 	author='Milos Svana',
 	author_email='milos.svana@gmail.com',
 	url='https://github.com/msvana/warcreader',
