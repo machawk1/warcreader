@@ -43,7 +43,7 @@ class WarcFile(object):
 		'''
 		Accepts a file object or any other object which provides same interface,
 		for example an instance of gzip.GzipFile class. This object should 
-		contain the WARC archieve. The file must be opened in binary mode.
+		contain the WARC archive. The file must be opened in binary mode.
 
 		Sets the initial state of the state machine.
 		'''
@@ -104,8 +104,8 @@ class WarcFile(object):
 
 	def get_warcinfo(self):
 		''' 
-		Returns WARCINFO record from the archieve as a single string including
-		WARC header. Expects the record to be in the beginning of the archieve,
+		Returns WARCINFO record from the archive as a single string including
+		WARC header. Expects the record to be in the beginning of the archive,
 		otherwise it will be not found.
 		'''
 		if self.searched_for_warcinfo:
