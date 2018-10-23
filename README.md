@@ -31,10 +31,10 @@ to your project
 
 ### WarcFile
 
-`WarcFile` class represents a WARC archieve to be read.
+`WarcFile` class represents a WARC archive to be read.
 
 Accepts one parameter on initialization. Its value should be an opened file
-containing the WARC archieve. It can be an instance of `file` type created by 
+containing the WARC archive. It can be an instance of `file` type created by 
 `open()` function or any other file-like object like `gzip.GzipFile` or 
 `lzma.LZMAFile` instance.
 
@@ -55,13 +55,13 @@ is found, the search is stopped.
 
 ### Webpage
 
-`Webpage` class represents one HTTP response from WARC archieve. Does not
+`Webpage` class represents one HTTP response from WARC archive. Does not
 provide any methods, only the following attributes:
 
 - `uri` - absolute URI of the HTTP response
 - `content_type` - value of `Content-Type` field of HTTP header. `None` if this field is not found
 - `payload` - contents of the HTTP response like HTML source core of the the web page
-- `warc_record` - raw warc record as read from the archieve
+- `warc_record` - raw warc record as read from the archive
 
 ### Example
 
